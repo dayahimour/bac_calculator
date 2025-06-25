@@ -14,7 +14,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildTypes {
+    getByName("release") {
+        isMinifyEnabled = true
+        isShrinkResources = true
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro"
+        )
+    }
+}
 
+           
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
