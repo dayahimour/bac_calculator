@@ -192,6 +192,7 @@ class _BacHomePageState extends State<BacHomePage> {
           padding: const EdgeInsets.all(16),
           child: selectedField == null
               ? Column(
+          
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -209,47 +210,40 @@ class _BacHomePageState extends State<BacHomePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: ListView(
-                        children: fields.entries.map((entry) {
-                          return GestureDetector(
-                            onTap: () => selectField(entry.key),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 12),
-                              decoration: BoxDecoration(
-                                color: entry.value.color,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(entry.value.icon, color: Colors.white),
-                                  const SizedBox(width: 10),
-                                  Text(entry.key,
-                                      style: const TextStyle(color: Colors.white, fontSize: 18)),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                )
+                    const SizedBox(height: 60),
+                   Expanded( child: ListView( children: fields.entries.map((entry) { return GestureDetector( onTap: () => selectField(entry.key), child: Container( padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 12), decoration: BoxDecoration( color: entry.value.color, borderRadius: BorderRadius.circular(8), ), child: Row( mainAxisAlignment: MainAxisAlignment.center, children: [ Icon(entry.value.icon, color: Colors.white), const SizedBox(width: 15), Text(entry.key, style: const TextStyle(color: Colors.white, fontSize: 18)), ], ), ), ); }).toList(), ), ), ], )
               : Column(
                   children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        onPressed: () => setState(() => selectedField = null),
-                      ),
-                    ),
-                    Text('المعدل - $selectedField',
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1f2937))),
-                    const SizedBox(height: 16),
+                  Padding(
+  padding: const EdgeInsets.only(bottom: 16),
+  child: Stack(
+    alignment: Alignment.center,
+    children: [
+      Align(
+        alignment: Alignment.centerLeft,
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => setState(() => selectedField = null),
+        ),
+      ),
+      Text(
+        'المعدل - $selectedField',
+        style: const TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1f2937),
+        ),
+      ),
+    ],
+  ),
+),
+const Divider(
+  thickness: 1.5,
+  height: 1.5,
+  color: Color(0xFFcbd5e1), // لون أنيق يشبه الرمادي الفاتح
+),
+const SizedBox(height: 12),
+
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       color: const Color(0xFFcbd5e1),
