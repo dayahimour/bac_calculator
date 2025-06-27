@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'report_screen.dart';
 
 void main() => runApp(const BacCalculatorApp());
 
@@ -25,21 +26,29 @@ class Subject {
   double grade;
   TextEditingController controller;
 
-  Subject({required this.name, required this.coefficient, this.grade = 0})
-      : controller = TextEditingController();
+  Subject({
+    required this.name,
+    required this.coefficient,
+    this.grade = 0,
+  }) : controller = TextEditingController();
 }
 
 class FieldInfo {
   final IconData icon;
   final Color color;
   final List<Subject> subjects;
-  const FieldInfo({required this.icon, required this.color, required this.subjects});
+
+  const FieldInfo({
+    required this.icon,
+    required this.color,
+    required this.subjects,
+  });
 }
 
 final Map<String, FieldInfo> fields = {
   'علوم تجريبية': FieldInfo(
     icon: Icons.science,
-    color: const Color(0xFF3b82f6),
+    color: Color(0xFF3b82f6),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 3),
       Subject(name: 'اللغة الفرنسية', coefficient: 2),
@@ -56,7 +65,7 @@ final Map<String, FieldInfo> fields = {
   ),
   'رياضيات': FieldInfo(
     icon: Icons.calculate,
-    color: const Color(0xFF6366f1),
+    color: Color(0xFF6366f1),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 3),
       Subject(name: 'اللغة الفرنسية', coefficient: 2),
@@ -73,7 +82,7 @@ final Map<String, FieldInfo> fields = {
   ),
   'تقني رياضي': FieldInfo(
     icon: Icons.settings,
-    color: const Color(0xFF10b981),
+    color: Color(0xFF10b981),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 2),
       Subject(name: 'اللغة الفرنسية', coefficient: 2),
@@ -90,7 +99,7 @@ final Map<String, FieldInfo> fields = {
   ),
   'تسيير و اقتصاد': FieldInfo(
     icon: Icons.attach_money,
-    color: const Color(0xFFf59e0b),
+    color: Color(0xFFf59e0b),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 3),
       Subject(name: 'اللغة الفرنسية', coefficient: 2),
@@ -108,7 +117,7 @@ final Map<String, FieldInfo> fields = {
   ),
   'لغات أجنبية': FieldInfo(
     icon: Icons.translate,
-    color: const Color(0xFFec4899),
+    color: Color(0xFFec4899),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 5),
       Subject(name: 'اللغة الفرنسية', coefficient: 5),
@@ -124,7 +133,7 @@ final Map<String, FieldInfo> fields = {
   ),
   'آداب و فلسفة': FieldInfo(
     icon: Icons.menu_book,
-    color: const Color(0xFF8b5cf6),
+    color: Color(0xFF8b5cf6),
     subjects: [
       Subject(name: 'اللغة العربية', coefficient: 6),
       Subject(name: 'اللغة الفرنسية', coefficient: 3),
@@ -181,9 +190,11 @@ class _BacHomePageState extends State<BacHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double total = subjects.fold(0, (sum, s) => sum + s.grade * s.coefficient);
+    double total =
+        subjects.fold(0, (sum, s) => sum + s.grade * s.coefficient);
     int coeffSum = subjects.fold(0, (sum, s) => sum + s.coefficient);
-    String average = coeffSum > 0 ? (total / coeffSum).toStringAsFixed(2) : '0.00';
+    String average =
+        coeffSum > 0 ? (total / coeffSum).toStringAsFixed(2) : '0.00';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
@@ -192,7 +203,6 @@ class _BacHomePageState extends State<BacHomePage> {
           padding: const EdgeInsets.all(16),
           child: selectedField == null
               ? Column(
-          
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -205,54 +215,106 @@ class _BacHomePageState extends State<BacHomePage> {
                         children: [
                           Icon(Icons.school, color: Colors.white),
                           SizedBox(width: 8),
-                          Text('اختر شعبة البكالوريا',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                          Text(
+                            'اختر شعبة البكالوريا',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 60),
-                   Expanded( child: ListView( children: fields.entries.map((entry) { return GestureDetector( onTap: () => selectField(entry.key), child: Container( padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 12), decoration: BoxDecoration( color: entry.value.color, borderRadius: BorderRadius.circular(8), ), child: Row( mainAxisAlignment: MainAxisAlignment.center, children: [ Icon(entry.value.icon, color: Colors.white), const SizedBox(width: 15), Text(entry.key, style: const TextStyle(color: Colors.white, fontSize: 18)), ], ), ), ); }).toList(), ), ), ], )
+                    Expanded(
+                      child: ListView(
+                        children: fields.entries.map((entry) {
+                          return GestureDetector(
+                            onTap: () => selectField(entry.key),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              decoration: BoxDecoration(
+                                color: entry.value.color,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(entry.value.icon,
+                                      color: Colors.white),
+                                  const SizedBox(width: 15),
+                                  Text(entry.key,
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18)),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                )
               : Column(
                   children: [
-                  Padding(
-  padding: const EdgeInsets.only(bottom: 16),
-  child: Stack(
-    alignment: Alignment.center,
-    children: [
-      Align(
-        alignment: Alignment.centerLeft,
-        child: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => setState(() => selectedField = null),
-        ),
-      ),
-      Text(
-        'المعدل - $selectedField',
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF1f2937),
-        ),
-      ),
-    ],
-  ),
-),
-const Divider(
-  thickness: 1.5,
-  height: 1.5,
-  color: Color(0xFFcbd5e1), // لون أنيق يشبه الرمادي الفاتح
-),
-const SizedBox(height: 12),
-
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              onPressed: () =>
+                                  setState(() => selectedField = null),
+                            ),
+                          ),
+                          Text(
+                            'المعدل - $selectedField',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1f2937),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(
+                      thickness: 1.5,
+                      height: 1.5,
+                      color: Color(0xFFcbd5e1),
+                    ),
+                    const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       color: const Color(0xFFcbd5e1),
                       child: const Row(
                         children: [
-                          Expanded(child: Center(child: Text('المادة', style: TextStyle(fontWeight: FontWeight.bold)))),
-                          Expanded(child: Center(child: Text('المعامل', style: TextStyle(fontWeight: FontWeight.bold)))),
-                          Expanded(child: Center(child: Text('العلامة', style: TextStyle(fontWeight: FontWeight.bold)))),
-                          Expanded(child: Center(child: Text('المجموع', style: TextStyle(fontWeight: FontWeight.bold)))),
+                          Expanded(
+                              child: Center(
+                                  child: Text('المادة',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)))),
+                          Expanded(
+                              child: Center(
+                                  child: Text('المعامل',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)))),
+                          Expanded(
+                              child: Center(
+                                  child: Text('العلامة',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)))),
+                          Expanded(
+                              child: Center(
+                                  child: Text('المجموع',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)))),
                         ],
                       ),
                     ),
@@ -262,14 +324,17 @@ const SizedBox(height: 12),
                         itemBuilder: (context, i) {
                           final s = subjects[i];
                           return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                            margin:
+                                const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 8),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
+                                  color:
+                                      Colors.black.withOpacity(0.05),
                                   blurRadius: 2,
                                   offset: const Offset(0, 1),
                                 )
@@ -277,39 +342,60 @@ const SizedBox(height: 12),
                             ),
                             child: Row(
                               children: [
-                                Expanded(child: Text(s.name, textAlign: TextAlign.center)),
                                 Expanded(
-                                  child: s.name == 'اللغة الأمازيغية'
+                                    child: Text(s.name,
+                                        textAlign: TextAlign.center)),
+                                Expanded(
+                                  child: s.name ==
+                                          'اللغة الأمازيغية'
                                       ? TextField(
-                                          textAlign: TextAlign.center,
-                                          keyboardType: TextInputType.number,
-                                          onChanged: (val) => updateCoefficient(i, val),
-                                          decoration: const InputDecoration(
+                                          textAlign:
+                                              TextAlign.center,
+                                          keyboardType:
+                                              TextInputType.number,
+                                          onChanged: (val) =>
+                                              updateCoefficient(
+                                                  i, val),
+                                          decoration:
+                                              const InputDecoration(
                                             filled: true,
-                                            fillColor: Color(0xFFe0f2fe),
+                                            fillColor:
+                                                Color(0xFFe0f2fe),
                                             isDense: true,
-                                            border: OutlineInputBorder(),
+                                            border:
+                                                OutlineInputBorder(),
                                           ),
                                         )
-                                      : Text('${s.coefficient}', textAlign: TextAlign.center),
+                                      : Text(
+                                          '${s.coefficient}',
+                                          textAlign:
+                                              TextAlign.center),
                                 ),
                                 Expanded(
                                   child: TextField(
                                     controller: s.controller,
                                     textAlign: TextAlign.center,
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (val) => updateGrade(i, val),
-                                    decoration: const InputDecoration(
+                                    keyboardType:
+                                        TextInputType.number,
+                                    onChanged: (val) =>
+                                        updateGrade(i, val),
+                                    decoration:
+                                        const InputDecoration(
                                       filled: true,
-                                      fillColor: Color(0xFFfefce8),
+                                      fillColor:
+                                          Color(0xFFfefce8),
                                       isDense: true,
-                                      border: OutlineInputBorder(),
+                                      border:
+                                          OutlineInputBorder(),
                                     ),
                                   ),
                                 ),
                                 Expanded(
-                                  child: Text((s.grade * s.coefficient).toStringAsFixed(2),
-                                      textAlign: TextAlign.center),
+                                  child: Text(
+                                    (s.grade * s.coefficient)
+                                        .toStringAsFixed(2),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ],
                             ),
@@ -318,23 +404,53 @@ const SizedBox(height: 12),
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: 12, bottom: 24),
+                      margin:
+                          const EdgeInsets.only(top: 12, bottom: 24),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color(0xFF14b8a6),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:
+                            MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.refresh, color: Colors.white),
-                            onPressed: resetGrades,
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.refresh,
+                                    color: Colors.white),
+                                onPressed: resetGrades,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.save,
+                                    color: Colors.white),
+                                onPressed: () {
+                                  if (selectedField != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ReportScreen(
+                                          fieldName:
+                                              selectedField!,
+                                          subjects: subjects,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
-                          Text('المعدل: $average', style: const TextStyle(color: Colors.white, fontSize: 18)),
+                          Text(
+                            'المعدل: $average',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18),
+                          ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
         ),
@@ -342,3 +458,10 @@ const SizedBox(height: 12),
     );
   }
 }
+
+/// شاشة التقرير المنفصلة:
+// lib/report_screen.dart
+
+
+// lib/report_screen.dart
+
