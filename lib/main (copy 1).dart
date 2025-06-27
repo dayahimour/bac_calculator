@@ -148,8 +148,7 @@ final Map<String, FieldInfo> fields = {
 };
 
 
-
-                    class BacHomePage extends StatefulWidget {
+class BacHomePage extends StatefulWidget {
   const BacHomePage({super.key});
   @override
   State<BacHomePage> createState() => _BacHomePageState();
@@ -166,15 +165,19 @@ class _BacHomePageState extends State<BacHomePage> {
   }
 
   void updateGrade(int index, String value) {
-    final g = double.tryParse(value);
-    if (g != null) subjects[index].grade = g;
-    setState(() {});
+    final grade = double.tryParse(value);
+    if (grade != null) {
+      subjects[index].grade = grade;
+      setState(() {});
+    }
   }
 
   void updateCoefficient(int index, String value) {
-    final c = int.tryParse(value);
-    if (c != null) subjects[index].coefficient = c;
-    setState(() {});
+    final coeff = int.tryParse(value);
+    if (coeff != null) {
+      subjects[index].coefficient = coeff;
+      setState(() {});
+    }
   }
 
   void resetGrades() {
@@ -187,14 +190,11 @@ class _BacHomePageState extends State<BacHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final total = subjects.fold<double>(
-      0,
-      (sum, s) => sum + s.grade * s.coefficient,
-    );
-    final coeffSum = subjects.fold<int>(0, (sum, s) => sum + s.coefficient);
-    final average = coeffSum > 0
-        ? (total / coeffSum).toStringAsFixed(2)
-        : '0.00';
+    double total =
+        subjects.fold(0, (sum, s) => sum + s.grade * s.coefficient);
+    int coeffSum = subjects.fold(0, (sum, s) => sum + s.coefficient);
+    String average =
+        coeffSum > 0 ? (total / coeffSum).toStringAsFixed(2) : '0.00';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
@@ -202,7 +202,6 @@ class _BacHomePageState extends State<BacHomePage> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: selectedField == null
-              // === واجهة اختيار الشعبة ===
               ? Column(
                   children: [
                     Container(
@@ -214,8 +213,7 @@ class _BacHomePageState extends State<BacHomePage> {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.school,
-                              color: Colors.white, size: 28),
+                          Icon(Icons.school, color: Colors.white),
                           SizedBox(width: 8),
                           Text(
                             'اختر شعبة البكالوريا',
@@ -228,49 +226,8 @@ class _BacHomePageState extends State<BacHomePage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 35),
-                     Expanded(
-                      child: ListView(
-                        children: fields.entries.map((entry) {
-                          return GestureDetector(
-                            onTap: () => selectField(entry.key),
-                            child: Container(
-                              width: double.infinity,
-                              height: 70, // ارتفاع البطاقة
-                              margin: const EdgeInsets.only(bottom: 16),
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 18,
-                                horizontal: 22,
-                              ),
-                              decoration: BoxDecoration(
-                                color: entry.value.color,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // أولاً نص الشعبة
-                                  Text(
-                                    entry.key,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  // ثم الرمز
-                                  Icon(entry.value.icon,
-                                      color: Colors.white, size: 36),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
-                )
+                    const SizedBox(height: 60),
+                    Expanded( child: ListView( children: fields.entries.map((entry) { return GestureDetector( onTap: () => selectField(entry.key), child: Container( padding: const EdgeInsets.all(12), margin: const EdgeInsets.only(bottom: 12), decoration: BoxDecoration( color: entry.value.color, borderRadius: BorderRadius.circular(8), ), child: Row( mainAxisAlignment: MainAxisAlignment.center, children: [ Icon(entry.value.icon, color: Colors.white), const SizedBox(width: 15), Text(entry.key, style: const TextStyle( color: Colors.white, fontSize: 18)), ], ), ), ); }).toList(), ), ), ], )
                                           : Column(
                   children: [
                     Padding(
