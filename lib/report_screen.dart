@@ -1,6 +1,8 @@
+// lib/report_screen.dart
+
 import 'package:flutter/material.dart';
-import 'majors_screen.dart';
-import 'main.dart'; // غيّر المسار حسب مكان تعريف Subject
+import 'main.dart';           // لتعريف Subject
+import 'majors_screen.dart'; // إن كنت تحتاج زر التخصصات
 
 class ReportScreen extends StatelessWidget {
   final String fieldName;
@@ -12,17 +14,32 @@ class ReportScreen extends StatelessWidget {
     required this.subjects,
   }) : super(key: key);
 
+  Widget _cell(String text,
+      {bool bold = false, Color? color, double fontSize = 12}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+          color: color ?? Colors.black87,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final displayed = subjects.where((s) => s.coefficient > 0).toList();
-    final totalCoeffs = displayed.fold<int>(0, (sum, s) => sum + s.coefficient);
-    final totalScore = displayed.fold<double>(
-      0.0,
-      (sum, s) => sum + s.grade * s.coefficient,
-    );
-    final average = totalCoeffs > 0
+    final totalCoeffs = displayed.fold(0, (sum, s) => sum + s.coefficient);
+    final totalScore =
+        displayed.fold(0.0, (sum, s) => sum + s.grade * s.coefficient);
+    final averageStr = totalCoeffs > 0
         ? (totalScore / totalCoeffs).toStringAsFixed(2)
         : '0.00';
+    final avgValue = double.tryParse(averageStr) ?? 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,82 +52,82 @@ class ReportScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Image.asset('assets/logo.png', width: 60, height: 60),
+              // الشعار واسم الشعبة
+              Image.asset('assets/logo.png', width: 50, height: 50),
               const SizedBox(height: 8),
-              Text(
-                fieldName,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
+              Text(fieldName,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
 
+              // ===== جدول مصغَّر أفقيًّا + تمرير عمودي =====
               Expanded(
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Center(
-                      child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(
-                          const Color(0xFFe2e8f0),
-                        ),
-                        columns: const [
-                          DataColumn(label: Text('المادة')),
-                          DataColumn(label: Text('المعامل')),
-                          DataColumn(label: Text('العلامة / 20')),
-                          DataColumn(label: Text('المجموع')),
-                        ],
-                        rows: [
-                          ...displayed.map((s) => DataRow(cells: [
-                                DataCell(Text(s.name)),
-                                DataCell(Text('${s.coefficient}')),
-                                DataCell(Text(s.grade.toStringAsFixed(2))),
-                                DataCell(Text(
-                                    (s.grade * s.coefficient).toStringAsFixed(2))),
-                              ])),
-                          DataRow(
-                            color: MaterialStateProperty.all(
-                              const Color(0xFFf1f5f9),
-                            ),
-                            cells: [
-                              const DataCell(Text(
-                                'المجموع الكلي',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                              DataCell(Text(
-                                '$totalCoeffs',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              )),
-                              const DataCell(Text('')),
-                              DataCell(Text(
-                                totalScore.toStringAsFixed(2),
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                              )),
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    // يجعل الجدول دائماً على الأقل بعرض الشاشة
+                    constraints: BoxConstraints(
+                        minWidth: MediaQuery.of(context).size.width),
+                    child: SingleChildScrollView(
+                      // للتمرير عمودي إذا زادت الصفوف
+                      scrollDirection: Axis.vertical,
+                      child: Table(
+                        border:
+                            TableBorder.all(color: Colors.black26, width: 1),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        columnWidths: const {
+                          0: FlexColumnWidth(3),
+                          1: FlexColumnWidth(1),
+                          2: FlexColumnWidth(1),
+                          3: FlexColumnWidth(1),
+                        },
+                        children: [
+                          // رأس الجدول
+                          TableRow(
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFe2e8f0)),
+                            children: [
+                              _cell('المادة', bold: true),
+                              _cell('المعامل', bold: true),
+                              _cell('العلامة/20', bold: true),
+                              _cell('المجموع', bold: true),
                             ],
                           ),
-                          DataRow(
-                            color: MaterialStateProperty.all(
-                              const Color(0xFFc6f6d5),
-                            ),
-                            cells: [
-                              const DataCell(Text(
-                                'المعدل العام',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF22543d),
-                                ),
-                              )),
-                              const DataCell(Text('')),
-                              const DataCell(Text('')),
-                              DataCell(Text(
-                                '$average / 20',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF22543d),
-                                ),
-                              )),
+                          // بيانات المواد
+                          for (var s in displayed)
+                            TableRow(children: [
+                              _cell(s.name),
+                              _cell('${s.coefficient}'),
+                              _cell(s.grade.toStringAsFixed(2)),
+                              _cell((s.grade * s.coefficient)
+                                  .toStringAsFixed(2)),
+                            ]),
+                          // المجموع الكلي
+                          TableRow(
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFf1f5f9)),
+                            children: [
+                              _cell('المجموع الكلي', bold: true),
+                              _cell('$totalCoeffs', bold: true),
+                              const SizedBox(),
+                              _cell(totalScore.toStringAsFixed(2),
+                                  bold: true),
+                            ],
+                          ),
+                          // المعدل العام
+                          TableRow(
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFc6f6d5)),
+                            children: [
+                              _cell('المعدل العام',
+                                  bold: true,
+                                  color: const Color(0xFF22543d)),
+                              const SizedBox(),
+                              const SizedBox(),
+                              _cell('$averageStr',
+                                  bold: true,
+                                  color: const Color(0xFF22543d)),
                             ],
                           ),
                         ],
@@ -120,20 +137,17 @@ class ReportScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
-
-              // زر التخصصات المتاحة
+              const SizedBox(height: 16),
+              // زر التخصصات (إن أردت)
               ElevatedButton.icon(
                 onPressed: () {
-                  final avg = double.tryParse(average) ?? 0.0;
-
-                  if (avg < 10.0) {
+                  if (avgValue < 10.0) {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      builder: (_) => AlertDialog(
                         title: const Text('تنبيه'),
-                        content:
-                            const Text('المعدل أقل من 10، لا توجد تخصصات متاحة.'),
+                        content: const Text(
+                            'المعدل أقل من 10، لا توجد تخصصات متاحة.'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -148,7 +162,7 @@ class ReportScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => MajorsScreen(
                           fieldName: fieldName,
-                          average: avg,
+                          average: avgValue,
                         ),
                       ),
                     );
@@ -158,21 +172,16 @@ class ReportScreen extends StatelessWidget {
                 label: const Text(
                   'التخصصات المتاحة',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF16a34a),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
-                  ),
+                      horizontal: 20, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 6,
+                      borderRadius: BorderRadius.circular(25)),
                 ),
               ),
             ],
