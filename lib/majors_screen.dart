@@ -13,26 +13,51 @@ class MajorsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // إيجاد أقرب معدل متاح في القاعدة
     final majorsByField = availableMajors[fieldName];
-    final availableKeys = majorsByField?.keys.toList() ?? [];
-    double closestKey = 10.0;
 
-    for (var key in availableKeys) {
-      if (average >= key) {
-        closestKey = key;
-      }
+    // تأكد من وجود تخصصات للشعبة
+    if (majorsByField == null || majorsByField.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('التخصصات المحتملة لمعدل $average - شعبة $fieldName'),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF16a34a),
+        ),
+        body: const Center(
+          child: Text(
+            'لا توجد تخصصات متاحة لهذه الشعبة.',
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      );
     }
 
-    final majors = majorsByField?[closestKey] ?? [];
+    // ترتيب المفاتيح (المعدلات) من الأكبر إلى الأصغر
+    final sortedKeys = majorsByField.keys
+        .where((key) => average >= key)
+        .toList()
+      ..sort((a, b) => b.compareTo(a)); // ترتيب تنازلي
+
+    // جمع كل التخصصات بدءًا من أعلى معدل ممكن
+    final allMajors = <String>[];
+    for (final key in sortedKeys) {
+      final majors = majorsByField[key];
+      if (majors != null) {
+        for (final major in majors) {
+          if (!allMajors.contains(major)) {
+            allMajors.add(major);
+          }
+        }
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text('التخصصات المحتملة لمعدل $average - شعبة $fieldName'),
         centerTitle: true,
-        backgroundColor: const Color(0xFF16a34a), // أخضر جذاب
+        backgroundColor: const Color(0xFF16a34a),
       ),
-      body: majors.isEmpty
+      body: allMajors.isEmpty
           ? const Center(
               child: Text(
                 'لا توجد تخصصات متاحة لهذا المعدل.',
@@ -42,9 +67,9 @@ class MajorsScreen extends StatelessWidget {
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: ListView.builder(
-                itemCount: majors.length,
+                itemCount: allMajors.length,
                 itemBuilder: (context, index) {
-                  final major = majors[index];
+                  final major = allMajors[index];
                   return Card(
                     elevation: 3,
                     shape: RoundedRectangleBorder(
